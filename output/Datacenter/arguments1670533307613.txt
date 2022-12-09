@@ -1,0 +1,15 @@
+x86
+Linux
+Xen
+[org.cloudbus.cloudsim.Host@768debd]
+10.0
+3.0
+0.05
+0.001
+0.0
+[org.cloudbus.cloudsim.Host@768debd]
+Datacenter_0
+org.cloudbus.cloudsim.DatacenterCharacteristics@27082746
+org.cloudbus.cloudsim.VmAllocationPolicySimple@66133adc
+[]
+0.0
