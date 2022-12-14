@@ -7,7 +7,14 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+ * Templates and functions helped to create the scenarios
+ */
 public class ClassTemplates {
+    /**
+     * Template for an iFogSim scenario, the scenario must be runnable under the package org.fog.test.perfeval located under iFogSim
+     * Methods used are found under StartSimulation.java located in the org.fog.test.perfeval package
+     */
     public String ifogSimFirstHalf = "package org.fog.test.perfeval;\n" +
             "import org.cloudbus.cloudsim.*;\n" +
             "import org.cloudbus.cloudsim.core.CloudSim;\n" +
@@ -27,11 +34,10 @@ public class ClassTemplates {
             "        sim.setVmid(0);\n" +
             "        sim.setPesNumber(1); \n" +
             "\n";
-
-    public String ifogSimSecondHalf = "\n" +
-            "    }\n" +
-            "}";
-
+    /**
+     * Template for the generated Dissect file VmTaskGenerated.java
+     * Contains the imports needed to run the generated file
+     */
     public String dissectFirstHalf = "package hu.u_szeged.inf.fog.simulator.application.demo;\n" +
             "\n" +
             "import java.util.EnumMap;\n" +
@@ -55,7 +61,9 @@ public class ClassTemplates {
             "\tpublic static void main(String[] args) throws Exception {\n" +
             "\t\t";
 
-
+    /**
+     * Can be used for creating an iFogSim scenario, unused as of now
+     */
     public void createVmTestGenerated(int hostMips, int hostId, int hostRam, long hostStorage, int hostBw,
                                       int userId, int vms, int idShift, long vmSize, int vmRam, int vmMips, long vmBw, int vmPesNumber, String vmm,
                                       String centerName, int centerMips, int centerHostId, int centerRam, long centerStorage, int centerBw, String centerArch,
@@ -114,19 +122,17 @@ public class ClassTemplates {
             file.createNewFile();
             fileWriter.write(code);
 
-
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void createDissectFile(long capacity, long bws,
-                                  double cores, double perCoreProcessing, long memory, int onD, int offD,
-                                  String vmId, double startupProcess, long nl, long reqDisk,
-                                  int vmCount,
-                                  String storageId, long storageSize
-    ){
+    /**
+     * Template for generating the DISSECT-CF file, VmTaskGenerated with the help of @multiplePhysicalMachine and @multipleVirtualAppliance
+     * Creates the file VmTaskGenerated.java
+     */
+    public void createDissectFile(long capacity, long bws){
         String pathToGenerated = "dissect-cf/dissect-cf-application/src/main/java/hu/u_szeged/inf/fog/simulator/application/demo/VmTaskGenerated.java";
 
         try{
@@ -144,48 +150,17 @@ public class ClassTemplates {
                 "repo.setState(NetworkNode.State.RUNNING);\n" +
                 "\n" +                                  //PhysicalMachine(double cores, double perCorePocessing, long memory, Repository disk, int onD, int offD,
                 multiplePhysicalMachine(repairHostArguments()) +
-                "PhysicalMachine pm = new PhysicalMachine(" + cores + "," + perCoreProcessing + ","  + memory + "L," + "repo," + 10 + "," + 10 + "," + "transitions.get(PowerTransitionGenerator.PowerStateKind.host));\n" +
-                "\n" +
-                "pm.turnon();\n" +
                 "\n" +
                 "Timed.simulateUntilLastEvent();\n" +
-                "\n" +
-                "System.out.println(\"Time: \"+Timed.getFireCount()+ \" PM state: \"+pm.getState());\n" +
-                "\n" +
-                "AlterableResourceConstraints arc = new AlterableResourceConstraints(4,1,4294967296L);\n" +
                 "\n" +
                 //public VirtualAppliance(final String id, final double startupProcess, final long nl, boolean vary, final long reqDisk)
                 multipleVirtualAppliance() + "\n" +
-                "VirtualAppliance va = new VirtualAppliance( " + "\"" + vmId + "\","  + startupProcess + "," + nl + "L," + "false" + "," + reqDisk + ");\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "repo.registerObject(va);\n" +
-                "\n" +
-
-                                               //
-                "VirtualMachine vm = pm.requestVM(va, arc, repo," + vmCount + ")[0];\n" +
                 "\n" +
                 "Timed.simulateUntilLastEvent();\n" +
-                "\n" +
-                "System.out.println(\"Time: \"+Timed.getFireCount()+ \" PM state: \"+pm.getState()+ \" VM state: \"+vm.getState());\n" +
-                "\n" +
-                "vm.newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {\n" +
-                "\n" +
-                "@Override\n" +
-                "public void conComplete() {\n" +
-                "System.out.println(\"Time: \"+Timed.getFireCount());\n" +
-                                                                   //cloudlet[0] + "," + cloudlet[3]
-                " StorageObject storageObj = new StorageObject(\"" + storageId + "\"," + storageSize + ", false); \n" +
-                "repo.registerObject(storageObj);" +
-                "}\n" +
-                "});\n" +
-                "\n" +
-                "Timed.simulateUntilLastEvent();"
-                + ifogSimSecondHalf;
+                "    }\n" +
+                "}";
 
             fileWriter.write(code);
-
 
             fileWriter.close();
         } catch (IOException e) {
@@ -193,30 +168,37 @@ public class ClassTemplates {
         }
     }
 
+    /**
+     * Returns a list with the repaired Host arguments
+     * The repair is needed as the setStorage data for the first instantiated Host is always located at the end of the created Hosts
+     */
     public ArrayList<String> repairHostArguments() throws IOException {
         ArrayList<String> hostArray = FileHandler.mostRecentInArray("output/Host");
         int numberOfHosts = FileHandler.timesCreated("output/Host") * 5;
-/*
-        for (String string : hostArray){
-            System.out.println(string);
-        }
-        System.out.println(numberOfHosts - 1);
 
- */
         hostArray.add(0, hostArray.get(numberOfHosts - 1));
 
         return hostArray;
-
-
     }
 
     // processing in dissect is 1 MIPSMS / number of CPU cores
     // 1 MIPMS = 1 MIPS/60
+
+    /**
+     * Converts MIPS value to processing used in DISSECT-CF
+     * @param mips the MIPS number
+     * @param pesNumber Number of cpu cores
+     * @return the processing value
+     */
     public double mipsToTick(int mips, int pesNumber){
         return Math.round(mips / 60.0 / pesNumber);
     }
 
-    //"VirtualAppliance va = new VirtualAppliance( " + "\"" + vmId + "\","  + startupProcess + "," + nl + "L," + "false" + "," + reqDisk + ");\n" +
+    /**
+     * Creates a String to be used for creating the VmTaskGenerated.java
+     *
+     * @return a String to be concatenated into the String in  @createDissectFile
+     */
     public String multipleVirtualAppliance() throws IOException {
         String result = "";
         String vaName = "va";
@@ -273,35 +255,31 @@ public class ClassTemplates {
 
         for (int i = 0; i<FileHandler.timesCreated("output/Host"); i++) {
 
-            result += "VirtualMachine vm" + i + " = pm" + i + ".requestVM(va" + i + ", arc" + i +  ", repo," + 1 + ")[0];\n"
-                    + "System.out.println(\"Time: \"+Timed.getFireCount()+ \" PM state: \" + pm" + i +".getState()+ \" VM state: \"+vm" + i + ".getState());\n";
-
+            result += "VirtualMachine vm" + i + " = pm" + i + ".requestVM(va" + i + ", arc" + i +  ", repo," + 1 + ")[0];\n";
         }
-        System.out.println(result);
+        result += "Timed.simulateUntilLastEvent();\n";
 
-/*
-        VirtualMachine vm = pm.requestVM(va, arc, repo, 1)[0];
-        Timed.simulateUntilLastEvent();
-        System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm.getState()+ " VM state: "+vm.getState());
-
-
-
-        vm.newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {
-            @Override
-            public void conComplete() {
-                System.out.println("Time: "+Timed.getFireCount());
-                StorageObject storageObj = new StorageObject("1",20000, false);
-                repo.registerObject(storageObj);
-            }
-        });
-*/
-
+        for (int i = 0; i<FileHandler.timesCreated("output/Host"); i++) {
+            result += "System.out.println(\"Time: \"+Timed.getFireCount()+ \" PM state: \" + pm" + i +".getState()+ \" VM state: \"+vm" + i + ".getState());\n" +
+            "vm" + i + ".newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {\n" +
+                    "            @Override\n" +
+                    "            public void conComplete() {\n" +
+                    "                System.out.println(\"Time: \"+Timed.getFireCount());\n" +
+                    "                StorageObject storageObj = new StorageObject(\"1\",20000, false);\n" +
+                    "                repo.registerObject(storageObj);\n" +
+                    "            }\n" +
+                    "        });\n"
+            ;
+        }
         return result;
     }
 
     /**
      * returns a string containing the number of physical machines according to the number of Hosts instantiated in iFogSim
+     * @param hostArguments an ArrayList containing the Host arguments
+     * @return String to be concatenated into the String in @createDissectFile
      */
+
     public String multiplePhysicalMachine(ArrayList<String> hostArguments) throws IOException {
         String result = "";
         String pmName = "pm";
@@ -343,7 +321,6 @@ public class ClassTemplates {
             }
         }
 
-
         for (int i=0; i<numberOfHosts; i++){
             String mipsString = mips.get(i).strip();
             int mipsNumber = Integer.parseInt(mipsString.split("\\.", 2)[0]);
@@ -354,8 +331,6 @@ public class ClassTemplates {
                     pmName + i + ".turnon();\n";
 
         }
-
-        System.out.println(result);
         return result;
     }
 

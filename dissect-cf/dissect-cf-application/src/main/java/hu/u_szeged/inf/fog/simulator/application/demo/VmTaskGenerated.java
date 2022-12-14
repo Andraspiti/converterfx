@@ -35,15 +35,8 @@ PhysicalMachine pm1 = new PhysicalMachine(1,17.0, 1000000L,repo, 10000, 10000,tr
 pm1.turnon();
 PhysicalMachine pm2 = new PhysicalMachine(1,17.0, 1000000L,repo, 10000, 10000,transitions.get(PowerTransitionGenerator.PowerStateKind.host));
 pm2.turnon();
-PhysicalMachine pm = new PhysicalMachine(8.589934592E9,10.0,8589934592L,repo,10,10,transitions.get(PowerTransitionGenerator.PowerStateKind.host));
-
-pm.turnon();
 
 Timed.simulateUntilLastEvent();
-
-System.out.println("Time: "+Timed.getFireCount()+ " PM state: "+pm.getState());
-
-AlterableResourceConstraints arc = new AlterableResourceConstraints(4,1,4294967296L);
 
 
 AlterableResourceConstraints arc0 = new AlterableResourceConstraints(1,4.0,512);
@@ -68,32 +61,37 @@ VirtualAppliance va4 = new VirtualAppliance( "4",0,1000L,false,10000);
 repo.registerObject(va4);
 Timed.simulateUntilLastEvent();
 VirtualMachine vm0 = pm0.requestVM(va0, arc0, repo,1)[0];
-System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm0.getState()+ " VM state: "+vm0.getState());
 VirtualMachine vm1 = pm1.requestVM(va1, arc1, repo,1)[0];
-System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm1.getState()+ " VM state: "+vm1.getState());
 VirtualMachine vm2 = pm2.requestVM(va2, arc2, repo,1)[0];
-System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm2.getState()+ " VM state: "+vm2.getState());
-
-VirtualAppliance va = new VirtualAppliance( "va",800.0,0L,false,1073741824);
-
-
-
-repo.registerObject(va);
-
-VirtualMachine vm = pm.requestVM(va, arc, repo,1)[0];
-
 Timed.simulateUntilLastEvent();
+System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm0.getState()+ " VM state: "+vm0.getState());
+vm0.newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {
+            @Override
+            public void conComplete() {
+                System.out.println("Time: "+Timed.getFireCount());
+                StorageObject storageObj = new StorageObject("1",20000, false);
+                repo.registerObject(storageObj);
+            }
+        });
+System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm1.getState()+ " VM state: "+vm1.getState());
+vm1.newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {
+            @Override
+            public void conComplete() {
+                System.out.println("Time: "+Timed.getFireCount());
+                StorageObject storageObj = new StorageObject("1",20000, false);
+                repo.registerObject(storageObj);
+            }
+        });
+System.out.println("Time: "+Timed.getFireCount()+ " PM state: " + pm2.getState()+ " VM state: "+vm2.getState());
+vm2.newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {
+            @Override
+            public void conComplete() {
+                System.out.println("Time: "+Timed.getFireCount());
+                StorageObject storageObj = new StorageObject("1",20000, false);
+                repo.registerObject(storageObj);
+            }
+        });
 
-System.out.println("Time: "+Timed.getFireCount()+ " PM state: "+pm.getState()+ " VM state: "+vm.getState());
-
-vm.newComputeTask(100000, ResourceConsumption.unlimitedProcessing, new ConsumptionEventAdapter() {
-
-@Override
-public void conComplete() {
-System.out.println("Time: "+Timed.getFireCount());
- StorageObject storageObj = new StorageObject("10",10, false); 
-repo.registerObject(storageObj);}
-});
 
 Timed.simulateUntilLastEvent();
     }

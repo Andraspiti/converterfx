@@ -16,8 +16,8 @@ public class FileHandler {
     public static String uploadedFileName = "";
 
     /**
-     * copies the file that is uploaded into the test/perfeval directory under ifogsim
-     * also sets the uploadedFileName, which is called for maven install (the file name without the extension)
+     * Copies the file that is uploaded into the test/perfeval directory under iFogSim
+     * also sets the @uploadedFileName, which is called for maven install (the file name without the extension)
      */
     public static void openFile(File file) {
         try {
@@ -30,7 +30,7 @@ public class FileHandler {
     }
 
     /**
-     * returns the path of the most recently created file in the given directory
+     * Returns the path of the most recently created file in the given directory
      */
     public static String getMostRecentOutput(String dirPath) throws IOException {
         long max = 0;
@@ -40,7 +40,6 @@ public class FileHandler {
         File[] allFilesInDir = directory.listFiles();
 
         if (allFilesInDir.length == 0){return "Empty folder!";}
-
 
         for (File file : allFilesInDir){
             String fileString = file.toString();
@@ -109,18 +108,16 @@ public class FileHandler {
     }
 
     /**
-     * returns the content of the most recent file in the given directory as an ArrayList
+     * Returns the content of the most recent file in the given directory as an ArrayList
      */
     public static ArrayList<String> mostRecentInArray(String pathToDir) throws IOException {
         ArrayList<String> arguments = new ArrayList<>();
 
         File file = new File(getMostRecentOutput(pathToDir));
         Scanner scanner = new Scanner(file);
-        while (scanner.hasNextLine()){
+        while (scanner.hasNextLine()) {
             arguments.add(scanner.nextLine());
         }
         return arguments;
     }
-
-
 }

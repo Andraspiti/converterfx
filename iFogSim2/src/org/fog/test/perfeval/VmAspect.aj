@@ -1,11 +1,11 @@
 package org.fog.test.perfeval;
 
-import java.io.*;
-
-
+/**
+ * Aspect for getting the parameters of the Vm's id, userId, MIPS, pesNumber, ram, bw, size, vmm
+ * The parameters are written to a txt under output/Vm
+ */
 public aspect VmAspect {
 
-    //private pointcut vmPointCut(): execution (org.cloudbus.cloudsim.Vm.new(..) );
     private pointcut vmPointCut(): execution (* org.cloudbus.cloudsim.Vm.setId(..))
                                ||  execution (* org.cloudbus.cloudsim.Vm.setUserId(..))
                                ||  execution (* org.cloudbus.cloudsim.Vm.setMips(..))
@@ -14,7 +14,6 @@ public aspect VmAspect {
                                ||  execution (* org.cloudbus.cloudsim.Vm.setBw(..))
                                ||  execution (* org.cloudbus.cloudsim.Vm.setSize(..))
                                ||  execution (* org.cloudbus.cloudsim.Vm.setVmm(..))
-
      ;
 
     private final StartSimulation sim = new StartSimulation();
@@ -33,17 +32,4 @@ public aspect VmAspect {
         }
     }
 
-
-    /*
-        after():executionJoinPoints(){
-            System.out.println("Aspect is working: ");
-            System.out.println(thisJoinPoint.getSignature().getName());
-
-            Object[] args = thisJoinPoint.getArgs();
-            for (Object arg : args) {
-                System.out.println(arg);
-            }
-        }
-     */
-//private pointcut vmPointCut(): execution (* org.cloudbus.cloudsim.Vm.*(..));
 }

@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * The controller class for primary.fxml
+ */
 public class PrimaryController {
 
 }

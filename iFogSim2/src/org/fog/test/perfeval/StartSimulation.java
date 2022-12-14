@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Contains Methods for creating an iFogSim scenario
+ * methods from https://github.com/Cloudslab/cloudsim/blob/master/modules/cloudsim-examples/src/main/java/org/cloudbus/cloudsim/examples/CloudSimExample7.java
+ * Example can be found under VmTest.java
+ */
 public class StartSimulation {
     private int vmid;
     private int pesNumber;
@@ -31,21 +36,21 @@ public class StartSimulation {
         this.pesNumber = pesNumber;
     }
 
+    /**
+     * Creates a Host with the following parameters
+     * @param mips MIPS value of the Host
+     * @param hostId The Host's Id
+     * @param ram The amount of ram assigned to the Host
+     * @param storage The amount of storage assigned to the Host
+     * @param bw The amount of bandwidth assigned to the Host
+     */
     public List<Host> createHost(int mips, int hostId, int ram, long storage, int bw){
         List<Host> hostList = new ArrayList<Host>();
 
         List<Pe> peList = new ArrayList<Pe>();
 
-        //int mips = 1000;
-
         peList.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
 
-        /*
-        int hostId = 0;
-        int ram = 2048; // host memory (MB)
-        long storage = 1000000; // host storage
-        int bw = 10000;
-*/
         hostList.add(
                 new Host(
                         hostId,
@@ -60,29 +65,31 @@ public class StartSimulation {
         return hostList;
     }
 
+    /**
+     * Creates a Datacenter with the following parameters:
+     * @param name Name of the Datacenter
+     * @param mips MIPS value of the Datacenter
+     * @param hostId Id of the Host
+     * @param ram host memory (MB)
+     * @param storage host storage
+     * @param bw datacenter bandwidth
+     * @param arch system architecture
+     * @param os operating system
+     * @param vmm virtualization hypervisor type
+     * @param time_zone time zone this resource located
+     * @param cost the cost of using processing in this resource
+     * @param costPerMem  the cost of using memory in this resource
+     * @param costPerStorage the cost of using storage in this resource
+     * @param costPerBw  the cost of using bw in this resource
+     * @return The created Datacenter
+     */
     public Datacenter createDatacenter(String name, int mips, int hostId, int ram, long storage, int bw, String arch,
                                                String os, String vmm , double time_zone, double cost, double costPerMem, double costPerStorage, double costPerBw) {
 
-        // Here are the steps needed to create a PowerDatacenter:
-        // 1. We need to create a list to store
-        // our machine
         List<Host> hostList = new ArrayList<Host>();
-
-        // 2. A Machine contains one or more PEs or CPUs/Cores.
-        // In this example, it will have only one core.
         List<Pe> peList = new ArrayList<Pe>();
 
-        //int mips = 1000;
-
-        // 3. Create PEs and add these into a list.
-        peList.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
-
-        // 4. Create Host with its id and list of PEs and add them to the list
-        // of machines
-        //int hostId = 0;
-        //int ram = 2048; // host memory (MB)
-        //long storage = 1000000; // host storage
-        //int bw = 10000;
+        peList.add(new Pe(0, new PeProvisionerSimple(mips)));
 
         hostList.add(
                 new Host(
@@ -93,29 +100,12 @@ public class StartSimulation {
                         peList,
                         new VmSchedulerTimeShared(peList)
                 )
-        ); // This is our machine
-
-        // 5. Create a DatacenterCharacteristics object that stores the
-        // properties of a data center: architecture, OS, list of
-        // Machines, allocation policy: time- or space-shared, time zone
-        // and its price (G$/Pe time unit).
-        //String arch = "x86"; // system architecture
-        //String os = "Linux"; // operating system
-        //String vmm = "Xen";
-        //double time_zone = 10.0; // time zone this resource located
-        //double cost = 3.0; // the cost of using processing in this resource
-        //double costPerMem = 0.05; // the cost of using memory in this resource
-        //double costPerStorage = 0.001; // the cost of using storage in this
-        // resource
-        //double costPerBw = 0.0; // the cost of using bw in this resource
-        LinkedList<Storage> storageList = new LinkedList<Storage>(); // we are not adding SAN
-        // devices by now
+        );
+        LinkedList<Storage> storageList = new LinkedList<Storage>();
 
         DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
                 arch, os, vmm, hostList, time_zone, cost, costPerMem,
                 costPerStorage, costPerBw);
-
-        // 6. Finally, we need to create a PowerDatacenter object.
         Datacenter datacenter = null;
         try {
             datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
@@ -126,24 +116,21 @@ public class StartSimulation {
         return datacenter;
     }
 
-    //by default: a userId, vms, idShift , vmlist is a List<Vm>:  vmlist = createVM(2, 5, 0); creating 5 vms
+    /**
+     * Creates a Vm with the following parameters:
+     * @param userId the Id
+     * @param vms the number of Vms to be created
+     * @param idShift shifts the id by set amount
+     * @param size image size (MB)
+     * @param ram vm memory (MB)
+     * @param mips MIPS value of the Vm
+     * @param bw bandwidth value of the Vm
+     * @param pesNumber number of cpus
+     * @param vmm VMM name
+     * @return list to be passed to the broker later
+     */
     public List<Vm> createVM(int userId, int vms, int idShift, long size, int ram, int mips, long bw, int pesNumber, String vmm) {
-        //Creates a container to store VMs. This list is passed to the broker later
         LinkedList<Vm> list = new LinkedList<Vm>();
-/*
-        //VM Parameters
-        long size = 10000; //image size (MB)
-        int ram = 512; //vm memory (MB)
-        int mips = 250;
-        long bw = 1000;
-        int pesNumber = 1; //number of cpus
-        String vmm = "Xen"; //VMM name
-
-       // create VM
-        Vm vm = new Vm(vmid, 2, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
-
-*/
-        //create VMs
         Vm[] vm = new Vm[vms];
 
         for(int i=0;i<vms;i++){
@@ -154,10 +141,14 @@ public class StartSimulation {
         return list;
     }
 
-    public DatacenterBroker createBroker() {
+    /**
+     * Creates a broker
+     * @return the created Broker
+     */
+    public DatacenterBroker createBroker(String name) {
         DatacenterBroker broker = null;
         try {
-            broker = new DatacenterBroker("Broker");
+            broker = new DatacenterBroker(name);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -165,18 +156,18 @@ public class StartSimulation {
         return broker;
     }
 
+    /**
+     * Creates a Cloudlet
+     * @param id Cloudlet id
+     * @param length The size of the Cloudlet
+     * @param fileSize The input file size of the Cloudlet
+     * @param outputSize The output file size of the Cloudlet after execution (unit: in byte)
+     * @return the created Cloudlet
+     */
     public Cloudlet createCloudlet(int id, long length, long fileSize, long outputSize){
-        // Third step: Create Broker
-        DatacenterBroker broker = createBroker();
+        DatacenterBroker broker = createBroker("Broker");
         int brokerId = broker.getId();
 
-
-        /* Cloudlet properties
-        int id = 0;
-        long length = 400000;
-        long fileSize = 300;
-        long outputSize = 300;
-*/
         UtilizationModel utilizationModel = new UtilizationModelFull();
 
         Cloudlet cloudlet =
@@ -189,6 +180,11 @@ public class StartSimulation {
         return cloudlet;
     }
 
+    /**
+     * Creates a file to the directory given in the parameter
+     * @param toWrite an Object to be written into the file
+     * @param argumentFilePath The Path where the file is to be written
+     */
     public void fileWrite(Object toWrite, String argumentFilePath) {
         try {
 

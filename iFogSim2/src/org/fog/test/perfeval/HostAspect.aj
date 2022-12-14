@@ -1,22 +1,10 @@
 package org.fog.test.perfeval;
 
-import java.io.FileWriter;
-import java.io.IOException;
-
+/**
+ * Aspect for getting the parameters of the Host's id, storage, ram, bw, and MIPS value
+ * The parameters are written to a txt under output/Host
+ */
 public aspect HostAspect {
-/*
-    private pointcut hostPointCut(): execution (* org.cloudbus.cloudsim.Host.*(..))
-            || execution(* org.cloudbus.cloudsim.provisioners.RamProvisioner.*(..))
-            || execution(* org.cloudbus.cloudsim.provisioners.BwProvisioner.*(..))
-           || execution(* org.cloudbus.cloudsim.provisioners.PeProvisioner.*(..));
-
-    private pointcut hostPointCut(): execution (org.cloudbus.cloudsim.Host.new(..));
-/*
-            || execution(org.cloudbus.cloudsim.provisioners.RamProvisioner.new(..))
-            || execution(org.cloudbus.cloudsim.provisioners.BwProvisioner.new(..))
-            || execution(org.cloudbus.cloudsim.provisioners.PeProvisioner.new(..));
-
-*/
 
     private pointcut hostPointCut():
             execution (* org.cloudbus.cloudsim.Host.setId(..))
@@ -32,7 +20,6 @@ public aspect HostAspect {
 
     after(): hostPointCut(){
         Object[] args = thisJoinPoint.getArgs();
-        //System.out.print(thisJoinPoint.getSignature().getName() + ": ");
 
         for (Object arg : args) {
             if (arg == null) {

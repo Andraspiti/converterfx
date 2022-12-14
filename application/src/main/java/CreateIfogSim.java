@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Can be used to create an iFogSim scenario through the GUI, using createIfogSim.fxml
+ */
 public class CreateIfogSim {
 /*
 
